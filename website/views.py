@@ -83,7 +83,14 @@ def confirm_email(code):
     flash("Email confirmed", category="success")
     return redirect(url_for("login"))
 
+
 @app.route("/acceptcookies")
 def cookies():
     session["cookies"] = True #zapisuje w sesji przegladarki pare "cookies" i True
     return redirect(url_for("home"))
+
+
+@app.route("/create_flight")
+@superuser
+def create():
+    pass

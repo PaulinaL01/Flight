@@ -13,3 +13,10 @@ class User(db.Model, UserMixin):
     is_github_account = db.Column(db.Boolean, default=False)
     confirmed_email = db.Column(db.Boolean, default=False)
     confirm_code = db.Column(db.String(65))
+
+class Flight(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    flight_number = db.Column(db.String(100))
+    IATACode = db.Column(db.String(3))
+    departure_city = db.Column(db.String(100))
+    arrival_city = db.Column(db.String(100))
