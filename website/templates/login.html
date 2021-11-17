@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="POST">
+    {{ form.csrf_token }}
+    <div class="form-group">
+        <label for="login">Username</label>
+        {{ form.login(class="form-control") }}
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        {{ form.password(class="form-control") }}
+    </div>
+
+     <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+<br>
+<a href="/github_login"><button class="btn btn-dark">Login via github</button></a>
+{% endblock %}

@@ -1,0 +1,11 @@
+flask
+flask-login
+requests
+flask-SQLAlchemy
+flask-wtf
+flask-migrate
+flask-dance
+flask-mail
+email_validator
+toml
+faker

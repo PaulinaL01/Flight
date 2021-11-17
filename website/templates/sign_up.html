@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Country{% endblock %}
+
+{% block content %}
+
+
+<form method="POST">
+   {{ form.csrf_token }}
+    <div class="form-group">
+    <label for="login">{{ form.login.label }}</label>
+    {{ form.login(class="form-control") }}
+  </div>
+  <div class="form-group">
+    <label for="email">{{ form.email.label }}</label>
+    {{ form.email(class="form-control") }}
+  </div>
+  <div class="form-group">
+    <label for="password1">{{ form.password1.label }}</label>
+    {{ form.password1(class="form-control") }}
+  </div>
+    <div class="form-group">
+    <label for="password2">{{ form.password2.label }}</label>
+      {{ form.password2(class="form-control") }}
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}

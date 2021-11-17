@@ -1,0 +1,11 @@
+SECRET_KEY="1234"
+SQLALCHEMY_DATABASE_URI="sqlite:///database.db"
+DEBUG=true
+HOST="127.0.0.1"
+PORT=5000
+MAIL_SERVER="smtp.gmail.com"
+MAIL_PORT=465
+MAIL_USERNAME="flaskproject2@gmail.com"
+MAIL_PASSWORD="skkfbdwtdmgkzcvn"
+MAIL_USE_TLS=false
+MAIL_USE_SSL=true
