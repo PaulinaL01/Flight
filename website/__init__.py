@@ -17,8 +17,8 @@ db = SQLAlchemy()
 db.init_app(app)
 
 blueprint = make_github_blueprint(
-    client_id="f8c198030ee1ff5d4472",
-    client_secret="0909003f1c5c0e1f674d56d626d3e9864eae96db",
+    client_id="Iv1.2febb8607328c8af",
+    client_secret="01976bcddc0f3b9606fd7375cd669682b5d15d64",
 )
 app.register_blueprint(blueprint, url_prefix="/github_login")
 

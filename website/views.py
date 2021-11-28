@@ -20,18 +20,24 @@ def home():
 def sign_up():
     form = SignUpForm()
     if form.validate_on_submit():
-        user = User(login=form.login.data,
-                    email=form.email.data,
-                    password=generate_password_hash(form.password1.data),
-                    confirm_code=create_code(64))
-        db.session.add(user)
-        db.session.commit()
-        msg = Message("Email confirmation", sender=("Flask Project", "flaskproject2@gmail.com"), recipients=[user.email])
-        with open("website/templates/email_confirmation.html", "r", encoding="utf-8") as f:
-            msg.html = render_template_string(f.read(), code=user.confirm_code)
-            mail.send(msg)
-        flash("Account created! Confirm email adress", category="success")
-        return redirect(url_for("login"))
+        if User.query.filter_by(login=form.login.data).first():
+            flash("Podany uzytkownik juz istnieje", category="warning")
+        elif User.query.filter_by(email=form.email.data).first():
+            flash("Użytkownik o podanym adresie email już istnieje!", category="warning")
+        else:
+            flash("Utworzono uzytkownika", category="success")
+            user = User(login=form.login.data, email=form.email.data,
+                        password=generate_password_hash(form.password1.data),
+                        confirm_code=create_code(64))
+            db.session.add(user)
+            db.session.commit()
+            msg = Message("Email confirmation", sender=("Flask Project", "flaskproject2@gmail.com"),
+                          recipients=[user.email])
+            with open("website/templates/email_confirmation.html", "r", encoding="utf-8") as f:
+                msg.html = render_template_string(f.read(), code=user.confirm_code)
+                mail.send(msg)
+            flash("Account created! Confirm email adress", category="success")
+            return redirect(url_for("login"))
     else:
         for error in form.login.errors:
             flash(error, category="warning")
@@ -88,6 +94,34 @@ def confirm_email(code):
 def cookies():
     session["cookies"] = True #zapisuje w sesji przegladarki pare "cookies" i True
     return redirect(url_for("home"))
+
+@app.route("/github_login")
+def github_login():
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+    else:
+        resp = github.get("/user")
+        print(resp)
+        print(resp.json())
+        name = resp.json()["login"]
+        email = resp.json()["email"]
+        user = User.query.filter_by(login=name).first()
+        if not user:
+            user = User(login=name, email=email,
+                        password=generate_password_hash("1234567"),
+                        is_github_account=True,
+                        confirmed_email=True)
+            db.session.add(user)
+            db.session.commit()
+            user = User.query.filter_by(login=name).first()
+        login_user(user)
+
+        if not user.is_github_account:
+            flash("Konto po podanej nazwie juz istnieje i nie jest powiazane z github-em", category="warning")
+            return redirect(url_for("login"))
+
+        return redirect(url_for("home"))
+
 
 
 @app.route("/create_flight")
