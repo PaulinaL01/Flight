@@ -6,15 +6,36 @@ from .forms import LoginForm, SignUpForm
 from .utils import create_code
 from flask_mail import Message
 from .decorator import superuser
+from .models import db, User, Flight
+from datetime import datetime
 
 from flask_dance.contrib.github import github
 
 
-@app.route("/")
+@app.route("/",methods=['GET', 'POST'])
 @login_required
 def home():
-    flash('duuuupa', category='success')
-    return render_template("home.html", uzytkownik=current_user.login, current_user=current_user)
+    flash('kotttty', category='success')
+    if request.method == "POST":
+        departure_city = request.form.get("departure_city")
+        flash("Wybralas: " + departure_city, category="success")
+        print(request.form.get("dateFrom"))
+        dateFrom = datetime.strptime(request.form.get("dateFrom"), "%Y-%m-%dT%H:%M")
+        print(dateFrom)
+    flights = Flight.query.all()
+    departure_citys = [flight.departure_city for flight in flights]
+
+    if request.method == "POST":
+        arrival_city = request.form.get("arrival_city")
+        flash("Wybralas: " + arrival_city, category="success")
+    flights = Flight.query.all()
+    arrival_citys = [flight.arrival_city for flight in flights]
+    if request.method == "POST":
+        arrival_data = request.form.get("arrival_data")
+        flash("Wybrałaś:" + arrival_data,category="success")
+    flights = Flight.query.all()
+    arrival_datas = [flight.arrival_data for flight in flights]
+    return render_template("home.html", uzytkownik=current_user.login, current_user=current_user, departure_citys=departure_citys, arrival_citys=arrival_citys, arrival_datas=arrival_datas)
 
 @app.route("/signup", methods=['GET', 'POST'])
 def sign_up():
@@ -75,6 +96,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
+    session.clear()
     flash("Wylogowano!", category="success")
     return redirect(url_for("login"))
 
@@ -127,4 +149,11 @@ def github_login():
 @app.route("/create_flight")
 @superuser
 def create():
+    pass
+@app.route("/booking")
+def booking():
+    pass
+
+@app.route("/flights_list")
+def flishts_list():
     pass

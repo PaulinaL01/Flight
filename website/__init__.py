@@ -15,6 +15,7 @@ DB_NAME = "database.db"
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_NAME}"
 db = SQLAlchemy()
 db.init_app(app)
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 blueprint = make_github_blueprint(
     client_id="Iv1.2febb8607328c8af",
@@ -44,6 +45,14 @@ try:
             user = User(login="admin", password=generate_password_hash("A1234567"), admin=True)
             db.session.add(user)
             db.session.commit()
+        if len(Flight.query.all()) == 0:
+            db.session.add(Flight(flight_number=1,
+                                  departure_city="Warszawa",
+                                  arrival_city="Poznan",
+                                  departure_data=datetime(2021, 12, 20, 14, 00),
+                                  arrival_data=datetime(2021, 12, 20, 18, 00),
+                                  passengers_number=100))
+            db.session.commit()
 
-except:
-    print("Cant create SU")
+except Exception as e:
+    print(f"Cant create SU: {e}")
