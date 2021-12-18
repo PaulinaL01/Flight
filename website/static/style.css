@@ -1,6 +1,19 @@
-from website import app
-import os
-from selenium import webdriver
 
-if __name__ == "__main__":
-    app.run(debug=True)
+body {
+background-image: url("beach.jpg");
+background-color: coral;
+background-position: center;
+}
+
+.container {
+  background: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+}
+
+h1 {
+  color: white;
+}
+label {
+    color: white;
+}
