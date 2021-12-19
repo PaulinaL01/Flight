@@ -10,139 +10,13 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
 
 
-
-<!--<div class="container">-->
-<!--  <div class="row">-->
-<!--    <div class="col-xs-12">-->
-<!--      <div class="box">-->
-<!--        &lt;!&ndash; /.box-header &ndash;&gt;-->
-<!--        <div class="box-body">-->
-<!--          <form method="POST">-->
-<!--            <div class="form-group row">-->
-
-<!--              <div class="col-sm-10">-->
-
-<!--                <label class="col-sm-2 form-control-label">Departure Town</label>-->
-<!--                <select name="departure_city" class="form-control selectpicker" id="select-departure" data-live-search="true">-->
-<!--                {% for departure_city in departure_citys %}-->
-<!--                  <option value="{{departure_city}}">{{departure_city}}</option>-->
-<!--                  {% endfor %}-->
-<!--                </select>-->
-
-
-<!--              </div>-->
-<!--            </div>-->
-<!--                       <button type="submit" class="btn btn-success">departure</button>-->
-<!--          </form>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; /.box-body &ndash;&gt;-->
-<!--      </div>-->
-<!--      &lt;!&ndash; /.box &ndash;&gt;-->
-<!--    </div>-->
-<!--    &lt;!&ndash; /.col &ndash;&gt;-->
-<!--  </div>-->
-<!--  &lt;!&ndash; /.row &ndash;&gt;-->
-<!--</div>-->
-<!--&lt;!&ndash; /.container &ndash;&gt;-->
-
-<!--<div class="container">-->
-<!--  <div class="row">-->
-<!--    <div class="col-xs-12">-->
-<!--      <div class="box">-->
-<!--        &lt;!&ndash; /.box-header &ndash;&gt;-->
-<!--        <div class="box-body">-->
-<!--          <form method="POST">-->
-<!--            <div class="form-group row">-->
-
-<!--              <div class="col-sm-10">-->
-
-<!--                <label class="col-sm-2 form-control-label">Arrival Town</label>-->
-<!--                <select name="arrival_city" class="form-control selectpicker" id="select-Arrival" data-live-search="true">-->
-<!--                {% for arrival_city in arrival_citys %}-->
-<!--                  <option value="{{arrival_city}}">{{arrival_city}}</option>-->
-<!--                  {% endfor %}-->
-<!--                </select>-->
-
-
-<!--              </div>-->
-<!--            </div>-->
-<!--                       <button type="submit" class="btn btn-success">arrival</button>-->
-<!--          </form>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; /.box-body &ndash;&gt;-->
-<!--      </div>-->
-<!--      &lt;!&ndash; /.box &ndash;&gt;-->
-<!--    </div>-->
-<!--    &lt;!&ndash; /.col &ndash;&gt;-->
-<!--  </div>-->
-<!--  &lt;!&ndash; /.row &ndash;&gt;-->
-<!--</div>-->
-<!--&lt;!&ndash; /.container &ndash;&gt;-->
-
-<!--<div class="container">-->
-<!--  <div class="row">-->
-<!--    <div class="col-xs-12">-->
-<!--      <div class="box">-->
-<!--        &lt;!&ndash; /.box-header &ndash;&gt;-->
-<!--        <div class="box-body">-->
-<!--          <form method="POST">-->
-<!--            <div class="form-group row">-->
-
-<!--              <div class="col-sm-10">-->
-<!--                <label class="col-sm-2 form-control-label">Departure Date</label>-->
-<!--                <input type="datetime-local" name="dateFrom" class="form-control">-->
-
-
-<!--              </div>-->
-<!--            </div>-->
-<!--            <button type="submit" class="btn btn-success">date</button>-->
-<!--          </form>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; /.box-body &ndash;&gt;-->
-<!--      </div>-->
-<!--      &lt;!&ndash; /.box &ndash;&gt;-->
-<!--    </div>-->
-<!--    &lt;!&ndash; /.col &ndash;&gt;-->
-<!--  </div>-->
-<!--  &lt;!&ndash; /.row &ndash;&gt;-->
-<!--</div>-->
-<!--&lt;!&ndash; /.container &ndash;&gt;-->
-
-
-<!--<div class="container">-->
-<!--  <div class="row">-->
-<!--    <div class="col-xs-12">-->
-<!--      <div class="box">-->
-<!--        &lt;!&ndash; /.box-header &ndash;&gt;-->
-<!--        <div class="box-body">-->
-<!--          <form method="POST">-->
-<!--            <div class="form-group row">-->
-
-<!--              <div class="col-sm-10">-->
-<!--                <label class="col-sm-2 form-control-label">Arrival Date</label>-->
-<!--                <input type="datetime-local" name="dateFrom" class="form-control">-->
-
-
-<!--              </div>-->
-<!--            </div>-->
-<!--            <button type="submit" class="btn btn-success">date</button>-->
-<!--          </form>-->
-<!--        </div>-->
-<!--        &lt;!&ndash; /.box-body &ndash;&gt;-->
-<!--      </div>-->
-<!--      &lt;!&ndash; /.box &ndash;&gt;-->
-<!--    </div>-->
-<!--    &lt;!&ndash; /.col &ndash;&gt;-->
-<!--  </div>-->
-<!--  &lt;!&ndash; /.row &ndash;&gt;-->
-<!--</div>-->
-<!--&lt;!&ndash; /.container &ndash;&gt;-->
-
-
+<p class="title">
+    Find your flight with
+    <br>Asgard company
+</p>
 
 <div class="container">
-    <h1>Find your flight with Asgard company</h1>
-  <div class="row justify-content-evenly">
+  <div class="row justify-content-between" id="first2">
       <div class="col-4">
         <form method="POST">
                   <label class="form-control-label">Departure Town</label>
@@ -164,7 +38,7 @@
         </form>
       </div>
   </div>
-  <div class="row justify-content-evenly">
+  <div class="row justify-content-between" id="another2">
       <div class="col-4">
             <form method="POST">
                       <label class="form-control-label">Departure Date</label>
@@ -180,5 +54,6 @@
   </div>
 </div>
 
+<a class="bn39" href="/"><span class="bn39span">Search</span></a>
 
 {% endblock %}

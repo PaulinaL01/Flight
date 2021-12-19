@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, ValidationError, IntegerField
+from wtforms import StringField, PasswordField, ValidationError, IntegerField, SelectField, DateTimeField
 from wtforms.validators import DataRequired, Length, EqualTo, Email
 from .models import User
 from werkzeug.security import check_password_hash
@@ -56,3 +56,10 @@ class SignUpForm(FlaskForm):
                                         EqualTo('password2', message='Passwords must match'),
                                         Password()])
     password2 = PasswordField("Password confirm", [DataRequired(), Length(min=8, max=30)])
+
+
+class SearchFlightForm(FlaskForm):
+    departure_city = SelectField("Departure city", [DataRequired()], render_kw = {"data-live-search": "true"})
+    arrival_city = SelectField("Arrival city", [DataRequired()], render_kw = {"data-live-search": "true"})
+    date_from = StringField("Departure Date", [DataRequired()], render_kw={"type" : "datetime-local"})
+    date_to = StringField("Arrival Date", [DataRequired()], render_kw={"type" : "datetime-local"})

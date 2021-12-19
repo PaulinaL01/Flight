@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect, flash, ses
 from flask_login import login_required, login_user, logout_user, current_user
 from . import app, db, User,mail
 from werkzeug.security import generate_password_hash
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm, SignUpForm, SearchFlightForm
 from .utils import create_code
 from flask_mail import Message
 from .decorator import superuser
@@ -15,7 +15,7 @@ from flask_dance.contrib.github import github
 @app.route("/",methods=['GET', 'POST'])
 @login_required
 def home():
-    flash('kotttty', category='success')
+
     if request.method == "POST":
         departure_city = request.form.get("departure_city")
         flash("Wybralas: " + departure_city, category="success")
@@ -157,3 +157,29 @@ def booking():
 @app.route("/flights_list")
 def flishts_list():
     pass
+
+
+@app.route("/admin_search", methods=["GET", "POST"])
+def admin_search():
+    #language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    form = SearchFlightForm()
+    flights = Flight.query.all()
+    form.departure_city.choices = [(flight.departure_city, flight.departure_city) for flight in flights]
+    form.arrival_city.choices = [(flight.arrival_city, flight.arrival_city) for flight in flights]
+
+    if form.validate_on_submit():
+        print(form.departure_city.data, form.arrival_city.data, form.date_from.data, form.date_to.data)
+        dateFrom = datetime.strptime(form.date_from.data, "%Y-%m-%dT%H:%M")
+        dateTo = datetime.strptime(form.date_to.data, "%Y-%m-%dT%H:%M")
+        flights = Flight.query.filter(Flight.arrival_city==form.arrival_city.data
+                                      and Flight.departure_city==form.departure_city.data
+                                      and Flight.departure_data >= dateFrom
+                                      and Flight.arrival_data <= dateTo)
+        flights = list(flights)
+        #tutaj trzeba wykonac redirect do innego endpointu z wynikami wyszukiwania
+
+    for fieldName, errorMessages in form.errors.items():
+        for err in errorMessages:
+            print(fieldName, err)
+
+    return render_template("admin_search.html", form=form)
