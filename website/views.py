@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect, flash, ses
 from flask_login import login_required, login_user, logout_user, current_user
 from . import app, db, User,mail
 from werkzeug.security import generate_password_hash
-from .forms import LoginForm, SignUpForm, SearchFlightForm
+from .forms import LoginForm, SignUpForm, SearchFlightForm, CreateFlight
 from .utils import create_code
 from flask_mail import Message
 from .decorator import superuser
@@ -15,27 +15,43 @@ from flask_dance.contrib.github import github
 @app.route("/",methods=['GET', 'POST'])
 @login_required
 def home():
+    form = SearchFlightForm()
+    flights = Flight.query.all()
+    form.departure_city.choices = [(flight.departure_city, flight.departure_city) for flight in flights]
+    form.arrival_city.choices = [(flight.arrival_city, flight.arrival_city) for flight in flights]
 
-    if request.method == "POST":
-        departure_city = request.form.get("departure_city")
-        flash("Wybralas: " + departure_city, category="success")
-        print(request.form.get("dateFrom"))
-        dateFrom = datetime.strptime(request.form.get("dateFrom"), "%Y-%m-%dT%H:%M")
-        print(dateFrom)
-    flights = Flight.query.all()
-    departure_citys = [flight.departure_city for flight in flights]
+    if form.validate_on_submit():
+        print(form.departure_city.data, form.arrival_city.data, form.date_from.data, form.date_to.data)
+        return redirect(f"/search/{form.departure_city.data}/{form.arrival_city.data}/{form.date_from.data}/{form.date_to.data}")
 
-    if request.method == "POST":
-        arrival_city = request.form.get("arrival_city")
-        flash("Wybralas: " + arrival_city, category="success")
-    flights = Flight.query.all()
-    arrival_citys = [flight.arrival_city for flight in flights]
-    if request.method == "POST":
-        arrival_data = request.form.get("arrival_data")
-        flash("Wybrałaś:" + arrival_data,category="success")
-    flights = Flight.query.all()
-    arrival_datas = [flight.arrival_data for flight in flights]
-    return render_template("home.html", uzytkownik=current_user.login, current_user=current_user, departure_citys=departure_citys, arrival_citys=arrival_citys, arrival_datas=arrival_datas)
+    for fieldName, errorMessages in form.errors.items():
+        for err in errorMessages:
+            print(fieldName, err)
+
+    return render_template("home.html", form=form)
+
+
+
+    # if request.method == "POST":
+    #     departure_city = request.form.get("departure_city")
+    #     flash("Wybralas: " + departure_city, category="success")
+    #     print(request.form.get("dateFrom"))
+    #     dateFrom = datetime.strptime(request.form.get("dateFrom"), "%Y-%m-%dT%H:%M")
+    #     print(dateFrom)
+    # flights = Flight.query.all()
+    # departure_citys = [flight.departure_city for flight in flights]
+    #
+    # if request.method == "POST":
+    #     arrival_city = request.form.get("arrival_city")
+    #     flash("Wybralas: " + arrival_city, category="success")
+    # flights = Flight.query.all()
+    # arrival_citys = [flight.arrival_city for flight in flights]
+    # if request.method == "POST":
+    #     arrival_data = request.form.get("arrival_data")
+    #     flash("Wybrałaś:" + arrival_data,category="success")
+    # flights = Flight.query.all()
+    # arrival_datas = [flight.arrival_data for flight in flights]
+    # return render_template("home.html", uzytkownik=current_user.login, current_user=current_user, departure_citys=departure_citys, arrival_citys=arrival_citys, arrival_datas=arrival_datas)
 
 @app.route("/signup", methods=['GET', 'POST'])
 def sign_up():
@@ -155,8 +171,30 @@ def booking():
     pass
 
 @app.route("/flights_list")
-def flishts_list():
-    pass
+def flights_list():
+    return render_template("flight_list.html")
+
+@app.route("/create_flight_admin")
+def create_flight_admin():
+    # language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+    form = CreateFlight
+
+
+    if form.validate_on_submit():
+        print(form.departure_city.data, form.arrival_city.data, form.date_from.data, form.date_to.data)
+        dateFrom = datetime.strptime(form.date_from.data, "%Y-%m-%dT%H:%M")
+        dateTo = datetime.strptime(form.date_to.data, "%Y-%m-%dT%H:%M")
+        flights = Flight.query.filter(Flight.arrival_city == form.arrival_city.data
+                                      and Flight.departure_city == form.departure_city.data
+                                      and Flight.departure_data >= dateFrom
+                                      and Flight.arrival_data <= dateTo)
+        flights = list(flights)
+        # tutaj trzeba wykonac redirect do innego endpointu z wynikami wyszukiwania
+
+    for fieldName, errorMessages in form.errors.items():
+        for err in errorMessages:
+            print(fieldName, err)
+    return render_template("create_flight_admin.html", form=form)
 
 
 @app.route("/admin_search", methods=["GET", "POST"])
@@ -183,3 +221,42 @@ def admin_search():
             print(fieldName, err)
 
     return render_template("admin_search.html", form=form)
+
+@app.route("/admin_flights_list")
+#@login_required
+def admin_flights_list():
+    flights = Flight.query.all()
+    return render_template("admin_flights_list.html", flights=flights)
+
+
+@app.route("/search", methods=["GET", "POST"])
+@app.route("/search/<departure>/<arrival>/<date_from>/<date_to>")
+#@login_required
+def search(departure="", arrival="", date_from=None, date_to=None):
+    form = SearchFlightForm()
+    flights = Flight.query.all()
+    form.departure_city.choices = [(flight.departure_city, flight.departure_city) for flight in flights]
+    form.arrival_city.choices = [(flight.arrival_city, flight.arrival_city) for flight in flights]
+
+    flights = []
+
+    if form.validate_on_submit():
+        print(form.departure_city.data, form.arrival_city.data, form.date_from.data, form.date_to.data)
+        return redirect(f"/search/{form.departure_city.data}/{form.arrival_city.data}/{form.date_from.data}/{form.date_to.data}")
+    else:
+        if date_from and date_to:
+            dateFrom = datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
+            dateTo = datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
+            flights = Flight.query.filter(Flight.arrival_city == arrival
+                                          and Flight.departure_city == departure
+                                          and Flight.departure_data >= dateFrom
+                                          and Flight.arrival_data <= dateTo)
+    for fieldName, errorMessages in form.errors.items():
+        for err in errorMessages:
+            print(fieldName, err)
+
+    form.departure_city.data = departure
+    form.arrival_city.data = arrival
+    form.date_from.data = date_from
+    form.date_to.data = date_to
+    return render_template("search.html", flights=flights, form=form)

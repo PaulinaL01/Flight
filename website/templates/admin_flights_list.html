@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Admin flights{% endblock %}
+{% block head %}  <link rel="stylesheet" type ="text/css" href="{{ url_for('static', filename='admin.css') }}" /> {% endblock %}
+
+{% block content %}
+{% for flig in flights %}
+
+<div class="row" id="button_row">
+ <a href="/admin_search">
+<button type="button" class="btn btn-danger">Search</button>
+ </a>
+<a href="/create_flight_admin">
+<button type="button" class="btn btn-danger">Create</button>
+</a>
+</div>
+<br>
+<br>
+<div class="row">
+  <div class="card">
+    <div class="card-body">
+      {{ flig.departure_data }}
+      <b>{{ flig.departure_city }} :
+        {{ flig.arrival_city }}</b>
+      {{ flig.arrival_data }}
+    </div>
+  </div>
+<button type="button" class="btn btn-success">Edit</button>
+
+</div>
+
+
+{% endfor %}
+
+{% endblock %}

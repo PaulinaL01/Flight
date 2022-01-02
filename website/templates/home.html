@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 
+{% block head %}  <link rel="stylesheet" type ="text/css" href="{{ url_for('static', filename='style.css') }}" /> {% endblock %}
+
 {% block content %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -15,45 +17,31 @@
     <br>Asgard company
 </p>
 
-<div class="container">
-  <div class="row justify-content-between" id="first2">
-      <div class="col-4">
-        <form method="POST">
-                  <label class="form-control-label">Departure Town</label>
-                  <select name="departure_city" class="form-control selectpicker" id="select-departure" data-live-search="true">
-                  {% for departure_city in departure_citys %}
-                    <option value="{{departure_city}}">{{departure_city}}</option>
-                    {% endfor %}
-                  </select>
-        </form>
-      </div>
-      <div class="col-4">
-        <form method="POST">
-                  <label class="form-control-label">Arrival Town</label>
-                  <select name="arrival_city" class="form-control selectpicker" id="select-Arrival" data-live-search="true">
-                  {% for arrival_city in arrival_citys %}
-                    <option value="{{arrival_city}}">{{arrival_city}}</option>
-                    {% endfor %}
-                  </select>
-        </form>
-      </div>
-  </div>
-  <div class="row justify-content-between" id="another2">
-      <div class="col-4">
-            <form method="POST">
-                      <label class="form-control-label">Departure Date</label>
-                      <input type="datetime-local" name="dateFrom" class="form-control">
-            </form>
+<form method="POST">
+    {{ form.csrf_token }}
+    <div class="container">
+      <div class="row justify-content-between" id="first2">
+          <div class="col-4">
+                      <label class="form-control-label">{{ form.departure_city.label }}</label>
+                        {{ form.departure_city(class="form-control selectpicker") }}
           </div>
-      <div class="col-4">
-          <form method="POST">
-                    <label class="form-control-label">Arrival Date</label>
-                    <input type="datetime-local" name="dateFrom" class="form-control">
-          </form>
+          <div class="col-4">
+                      <label class="form-control-label">{{ form.arrival_city.label }}</label>
+                       {{ form.arrival_city(class="form-control selectpicker") }}
+          </div>
       </div>
-  </div>
-</div>
+      <div class="row justify-content-between" id="another2">
+          <div class="col-4">
+                          <label class="form-control-label">{{ form.date_from.label }}</label>
+                           {{ form.date_from(class="form-control") }}
+              </div>
+          <div class="col-4">
+                        <label class="form-control-label">{{ form.date_to.label }}</label>
+                         {{ form.date_to(class="form-control") }}
+          </div>
+      </div>
+    </div>
 
-<a class="bn39" href="/"><span class="bn39span">Search</span></a>
-
+    <button class="bn39" type="submit"><span class="bn39span">Search</span></button>
+</form>
 {% endblock %}

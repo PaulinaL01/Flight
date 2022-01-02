@@ -1,9 +1,22 @@
 
 body {
-background-image: url("beach.jpg");
-background-color: coral;
-background-position: center;
+    color: Aqua;
+    background-color: #1F7685 !important;
+
 }
+
+.card{
+    width: 65%;
+}
+
+.row{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.button_row{
+    justify-content: space-between;
+    }
 
 .container{
     background: rgba(0,0,0,0.5);
@@ -20,7 +33,7 @@ background-position: center;
 }
 
 .title{
-  font-size: 70px;
+  font-size: 5vw;
   font-size-adjust: .5;
   color: #F0F8FF;
   background: rgba(0,0,0,0.5);

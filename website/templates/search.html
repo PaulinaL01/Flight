@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Admin flights{% endblock %}
-{% block head %}  <link rel="stylesheet" type ="text/css" href="{{ url_for('static', filename='admin.css') }}" /> {% endblock %}
+{% block title %}Home{% endblock %}
+
+{% block head %}  <link rel="stylesheet" type ="text/css" href="{{ url_for('static', filename='style.css') }}" /> {% endblock %}
 
 {% block content %}
 
@@ -10,11 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
 
-
-<p class="title">
-    Admin flights search
-</p>
-<form method="POST">
+<form method="POST" action="{{ url_for('search')}}">
     {{ form.csrf_token }}
     <div class="container">
       <div class="row justify-content-between" id="first2">
@@ -41,4 +38,23 @@
 
     <button class="bn39" type="submit"><span class="bn39span">Search</span></button>
 </form>
+
+<div>
+    {% for flight in flights %}
+    <div class="row" style="background: white;">
+        <div class="col">
+            {{ flight.departure_city }}
+        </div>
+        <div class="col">
+            {{ flight.departure_data }}
+        </div>
+        <div class="col">
+            {{ flight.arrival_city }}
+        </div>
+        <div class="col">
+            {{ flight.arrival_data }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
