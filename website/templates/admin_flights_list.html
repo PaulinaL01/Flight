@@ -3,7 +3,6 @@
 {% block head %}  <link rel="stylesheet" type ="text/css" href="{{ url_for('static', filename='admin.css') }}" /> {% endblock %}
 
 {% block content %}
-{% for flig in flights %}
 
 <div class="row" id="button_row">
  <a href="/admin_search">
@@ -13,6 +12,9 @@
 <button type="button" class="btn btn-danger">Create</button>
 </a>
 </div>
+
+{% for flig in flights %}
+
 <br>
 <br>
 <div class="row">
@@ -24,10 +26,11 @@
       {{ flig.arrival_data }}
     </div>
   </div>
-<button type="button" class="btn btn-success">Edit</button>
+<a href="/admin_flight_edit/{{flig.id}}">
+    <button type="button" class="btn btn-success">Edit</button>
+</a>
 
 </div>
-
 
 {% endfor %}
 

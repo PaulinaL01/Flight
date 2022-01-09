@@ -4,55 +4,49 @@
 
 {% block content %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css" rel="stylesheet" />
 
 
-<p class="title">
-    Admin flights creation
-</p>
+<p>{{flight.departure_city}}</p>
+
+
 <div class="container">
     <form method="POST">
        {{ form.csrf_token }}
         <div class="form-group">
         <label for="flight_number">{{ form.create_flight_number.label }}</label>
-                           {{ form.create_flight_number(class="form-control") }}
+                           {{ form.create_flight_number(class="form-control", value=flight.flight_number) }}
       </div>
         <div class="form-group">
         <label for="departure_city">{{ form.create_departure_city.label }}</label>
-                           {{ form.create_departure_city(class="form-control") }}
+                           {{ form.create_departure_city(class="form-control", value=flight.departure_city) }}
       </div>
       <div class="form-group">
         <label for="arrival_city">{{ form.create_arrival_city.label }}</label>
-                           {{ form.create_arrival_city(class="form-control") }}
+                           {{ form.create_arrival_city(class="form-control", value=flight.arrival_city) }}
       </div>
         <div class="form-group">
         <label for="departure_date">{{ form.create_date_from.label }}</label>
-                               {{ form.create_date_from(class="form-control") }}
+                               {{ form.create_date_from(class="form-control", value=flight.departure_date.strftime("%Y-%m-%dT%H:%M")) }}
       </div>
       <div class="form-group">
         <label for="arrival_date">{{ form.create_date_to.label }}</label>
-                             {{ form.create_date_to(class="form-control") }}
+                             {{ form.create_date_to(class="form-control", value=flight.arrival_date.strftime("%Y-%m-%dT%H:%M")) }}
       </div>
         <div class="form-group">
         <label for="passengers_number">{{ form.create_passengers_number.label }}</label>
-                             {{ form.create_passengers_number(class="form-control") }}
+                             {{ form.create_passengers_number(class="form-control", value=flight.passengers_number) }}
       </div>
         <div class="form-group">
         <label for="max_weight">{{ form.create_max_weight.label }}</label>
-                             {{ form.create_max_weight(class="form-control") }}
+                             {{ form.create_max_weight(class="form-control", value=flight.max_weight) }}
       </div>
         <div class="form-group">
         <label for="crew_number">{{ form.create_crew_number.label }}</label>
-                             {{ form.create_crew_number(class="form-control") }}
+                             {{ form.create_crew_number(class="form-control", value=flight.crew_number) }}
       </div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-
 
 
 {% endblock %}

@@ -63,8 +63,15 @@ class SearchFlightForm(FlaskForm):
     arrival_city = SelectField("Arrival city", [DataRequired()], render_kw = {"data-live-search": "true"})
     date_from = StringField("Departure Date", [DataRequired()], render_kw={"type" : "datetime-local"})
     date_to = StringField("Arrival Date", [DataRequired()], render_kw={"type" : "datetime-local"})
+
 class CreateFlight(FlaskForm):
-    create_departure_city = StringField()
-    create_arrival_city = StringField()
-    create_date_from = StringField()
-    create_date_to = StringField()
+    create_departure_city = StringField("Create Departure City", [DataRequired()])
+    create_arrival_city = StringField("Create Arrival City", [DataRequired()])
+    create_date_from = StringField("Create Departure Date", [DataRequired()], render_kw={"type" : "datetime-local"})
+    create_date_to = StringField("Create Arrival Date", [DataRequired()], render_kw={"type" : "datetime-local"})
+    create_flight_number = IntegerField("Create Flight Number", [DataRequired()])
+    create_passengers_number = IntegerField("Create Passengers Number", [DataRequired()])
+    create_max_weight = IntegerField("Create Max Weight", [DataRequired()])
+    create_crew_number = IntegerField("Create Crew Number", [DataRequired()])
+
+
