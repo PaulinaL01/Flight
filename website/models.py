@@ -20,6 +20,15 @@ class User(db.Model, UserMixin):
     confirm_code = db.Column(db.String(65))
     cart_items = db.relationship("Cart")
 
+    def get_flights_from_cart(self):
+        flights = []
+        for item in self.cart_items:
+            fl = Flight.query.filter_by(id=item.flight_id).first()
+            if fl:
+                flights.append(fl)
+        return flights
+
+
 class Flight(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     flight_number = db.Column(db.Integer)

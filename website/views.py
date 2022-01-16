@@ -175,11 +175,7 @@ def add_to_cart(id):
 
 @app.route("/cart", methods=["GET", "POST"])
 def cart():
-    for item in current_user.cart_items:
-        id=item.flight_id
-        print(id)
-        flights = Flight.query.filter_by(id=id).first()
-
+    flights = current_user.get_flights_from_cart()
     return render_template("cart.html",  flights=flights)
 
 
@@ -191,25 +187,25 @@ def cart():
 @app.route("/flights_list")
 def flights_list():
     flights = Flight.query.all()
-    #
-    #
-    #
-    # url = "https://leopieters-iata-and-icao-v1.p.rapidapi.com/airplaneDatabase"
-    #
-    # querystring = {"key": "5e51f3de30msh3f1d6d376d37970p146405jsnf34fbc386cc9", "numberRegistration": "HB-JVE"}
-    #
-    # headers = {
-    #     'x-rapidapi-host': "leopieters-iata-and-icao-v1.p.rapidapi.com",
-    #     'x-rapidapi-key': "f587148c75msh7bb156ed004573ap179ad0jsnfa417f22b13c"
-    # }
-    #
-    # response = requests.request("GET", url, headers=headers, params=querystring)
-    #
-    # # print(response.text)
-    #
-    # all_data = requests.get(
-    #     url, headers=headers, params=querystring).json()
-    # print(all_data)
+
+
+
+    url = "https://leopieters-iata-and-icao-v1.p.rapidapi.com/airplaneDatabase"
+
+    querystring = {"key": "5e51f3de30msh3f1d6d376d37970p146405jsnf34fbc386cc9", "numberRegistration": "HB-JVE"}
+
+    headers = {
+        'x-rapidapi-host': "leopieters-iata-and-icao-v1.p.rapidapi.com",
+        'x-rapidapi-key': "f587148c75msh7bb156ed004573ap179ad0jsnfa417f22b13c"
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    # print(response.text)
+
+    all_data = requests.get(
+        url, headers=headers, params=querystring).json()
+    print(all_data)
 
     return render_template("flights_list.html", flights=flights)
 
@@ -296,10 +292,11 @@ def search(departure="", arrival="", date_from=None, date_to=None):
         if date_from and date_to:
             dateFrom = datetime.strptime(date_from, "%Y-%m-%dT%H:%M")
             dateTo = datetime.strptime(date_to, "%Y-%m-%dT%H:%M")
-            flights = Flight.query.filter((Flight.arrival_city == arrival)
-                                          & (Flight.departure_city == departure)
-                                          & (Flight.departure_date.cast(Date) == dateFrom.date())) #TODO: dokonczyc bo nie dziala data, niezgodne typy danych
-            flights=list(flights)
+            flights = Flight.query.filter_by(arrival_city=arrival, departure_city=departure)
+
+            flights = [flight for flight in flights if flight.departure_date.date() == dateFrom.date()]
+
+
     for fieldName, errorMessages in form.errors.items():
         for err in errorMessages:
             print(fieldName, err)

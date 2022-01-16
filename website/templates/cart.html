@@ -10,18 +10,17 @@
 
 <br>
 <br>
+{% for flight in flights %}
 <div class="row">
   <div class="card">
     <div class="card-body">
-      {{ flights.departure_date }}
-   <b>{{ flights.departure_city }} :
-        {{ flights.arrival_city }}</b>
-      {{ flights.arrival_date }}
+      {{ flight.departure_date }}
+   <b>{{ flight.departure_city }} :
+        {{ flight.arrival_city }}</b>
+      {{ flight.arrival_date }}
     </div>
   </div>
-
-
 </div>
-
+{% endfor %}
 
 {% endblock %}
