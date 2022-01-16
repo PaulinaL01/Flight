@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, render_template, request, url_for, redirect, flash, session, send_from_directory,render_template_string
 from flask_login import login_required, login_user, logout_user, current_user
 from . import app, db, User,mail
@@ -6,7 +7,7 @@ from .forms import LoginForm, SignUpForm, SearchFlightForm, CreateFlight
 from .utils import create_code
 from flask_mail import Message
 from .decorator import superuser
-from .models import db, User, Flight
+from .models import db, User, Flight, Cart
 from datetime import datetime
 from sqlalchemy import cast, Date
 
@@ -140,7 +141,6 @@ def github_login():
         return redirect(url_for("home"))
 
 
-
 @app.route("/admin_flight_edit/<int:id>", methods=["GET", "POST"])
 def admin_flight_edit(id):
     form= CreateFlight()
@@ -155,19 +155,68 @@ def admin_flight_edit(id):
 
     return render_template("admin_flight_edit.html", flight=flight, form=form, datetime=datetime, str=str)
 
-@app.route("/booking")
-def booking():
-    pass
+
+@app.route("/add_to_cart/<int:id>", methods=["GET", "POST"])
+def add_to_cart(id):
+    if Cart.query.filter_by(flight_id=id).first():
+        f = Cart.query.filter_by(flight_id=id)
+        f.delete()
+        db.session.commit()
+        flash("Deleted from cart")
+    else:
+        cart_item = Cart(flight_id=id, customer_id=current_user.id)
+        db.session.add(cart_item)
+        db.session.commit()
+        print('Added to cart')
+        flash("Added to cart", category="success")
+
+    return redirect(url_for("flights_list"))
+
+
+@app.route("/cart", methods=["GET", "POST"])
+def cart():
+    for item in current_user.cart_items:
+        id=item.flight_id
+        print(id)
+        flights = Flight.query.filter_by(id=id).first()
+
+    return render_template("cart.html",  flights=flights)
+
+
+# @app.route("/booking")
+# def booking():
+#     pass
+
 
 @app.route("/flights_list")
 def flights_list():
-    return render_template("flight_list.html")
+    flights = Flight.query.all()
+    #
+    #
+    #
+    # url = "https://leopieters-iata-and-icao-v1.p.rapidapi.com/airplaneDatabase"
+    #
+    # querystring = {"key": "5e51f3de30msh3f1d6d376d37970p146405jsnf34fbc386cc9", "numberRegistration": "HB-JVE"}
+    #
+    # headers = {
+    #     'x-rapidapi-host': "leopieters-iata-and-icao-v1.p.rapidapi.com",
+    #     'x-rapidapi-key': "f587148c75msh7bb156ed004573ap179ad0jsnfa417f22b13c"
+    # }
+    #
+    # response = requests.request("GET", url, headers=headers, params=querystring)
+    #
+    # # print(response.text)
+    #
+    # all_data = requests.get(
+    #     url, headers=headers, params=querystring).json()
+    # print(all_data)
+
+    return render_template("flights_list.html", flights=flights)
 
 @app.route("/create_flight_admin", methods=["GET", "POST"])
 def create_flight_admin():
     # language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
     form = CreateFlight()
-
 
     if form.validate_on_submit():
         print(form.create_departure_city.data, form.create_arrival_city.data, form.create_date_from.data, form.create_date_to.data)

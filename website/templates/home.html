@@ -5,6 +5,8 @@
 
 {% block content %}
 
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
@@ -13,8 +15,7 @@
 
 
 <p class="title">
-    Find your flight with
-    <br>Asgard company
+    Fly with Asgard
 </p>
 
 <form method="POST">
@@ -36,12 +37,19 @@
                            {{ form.date_from(class="form-control") }}
               </div>
           <div class="col-4">
-                        <label class="form-control-label">{{ form.date_to.label }}</label>
+                        <label class="form-control-label">Return</label>
                          {{ form.date_to(class="form-control") }}
           </div>
       </div>
-    </div>
+        <div class="row">
+            <div class="col" align="center">
+            <button class="btn" type="submit">Search</button>
+            </div>
+        </div>
+<!--        <button class="btn-plane" type="submit"><ion-icon class="icon1" name="airplane-outline"></ion-icon></button>-->
 
-    <button class="bn39" type="submit"><span class="bn39span">Search</span></button>
+    </div>
 </form>
+
+
 {% endblock %}

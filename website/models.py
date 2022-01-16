@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     is_github_account = db.Column(db.Boolean, default=False)
     confirmed_email = db.Column(db.Boolean, default=False)
     confirm_code = db.Column(db.String(65))
+    cart_items = db.relationship("Cart")
 
 class Flight(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,5 +71,8 @@ class Customer(db.Model):
     id = db.Column(db.String, primary_key=True)
     booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"))
 
-
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    flight_id = db.Column(db.Integer, db.ForeignKey("flight.flight_id"))
+    customer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 

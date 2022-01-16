@@ -1,12 +1,18 @@
 
 body {
-background-image: url("beach.jpg");
-background-color: coral;
-background-position: center;
+    background-image: url("pexels-asad-photo-maldives-3601425.jpg");
+    background-color: #1F7685;
+    background-size: cover;
+    object-fit: cover;
+    display: block;
 }
 
 .container{
     background: rgba(0,0,0,0.5);
+    border-radius: 50px;
+    padding: 50px;
+    justify-content: center;
+    margin: 100px;
 }
 
 .first2 {
@@ -20,60 +26,35 @@ background-position: center;
 }
 
 .title{
-  font-size: 5vw;
+  font-size: 3.5vw;
   font-size-adjust: .5;
-  color: #F0F8FF;
-  background: rgba(0,0,0,0.5);
+  font-family: "Rockwell";
+  color: black;
   text-align: center;
   display: flex;
   justify-content: center;
-
 }
-
-.bn39 {
-  background-image: linear-gradient(135deg, #008aff, #86d472);
-  border-radius: 6px;
-  box-sizing: border-box;
-  color: #ffffff;
-  display: flex;
-  height: 50px;
-  font-size: 1.4em;
-  font-weight: 600;
-  padding: 4px;
-
-  text-decoration: none;
-  width: 7em;
-  z-index: 2;
-  position:center;
-  justify-content: center;
-  text-align: center;
-  margin: auto;
-
-}
-
-.bn39:hover {
-  color: #fff;
-}
-
-.bn39 .bn39span {
-  align-items: center;
-  background: #0e0e10;
-  border-radius: 6px;
-  display: flex;
-  justify-content: center;
-  height: 100%;
-  transition: background 0.5s ease;
-  width: 100%;
-
-}
-
-.bn39:hover .bn39span {
-  background: transparent;
-}
-
 
 label {
     color: white;
     font-size: 1.25vw;
     font-size-adjust: .5;
+}
+
+button.btn-plane {
+    background-color: #f2f2f2;
+    border-radius: 100px;
+    font-size: 3.75em;
+    cursor: pointer;
+    text-align: center;
+    justify-content: center;
+    display: flex
+}
+
+button.btn-plane:hover {
+  background-color: #cccccc;
+}
+
+.icon1 {
+    
 }
