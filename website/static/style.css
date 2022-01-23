@@ -26,13 +26,17 @@ body {
 }
 
 .title{
+  margin: auto;
   font-size: 3.5vw;
   font-size-adjust: .5;
   font-family: "Rockwell";
   color: black;
   text-align: center;
-  display: flex;
+  display: block;
   justify-content: center;
+  vertical-align: middle
+  align-items: center;
+
 }
 
 label {

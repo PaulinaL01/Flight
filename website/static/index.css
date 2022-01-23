@@ -2,3 +2,7 @@ body {
 background-color: #1F7685;
 background-position: center;
 }
+
+collapse navbar-collapse {
+background-color:   black;
+}

@@ -7,7 +7,7 @@ from .forms import LoginForm, SignUpForm, SearchFlightForm, CreateFlight
 from .utils import create_code
 from flask_mail import Message
 from .decorator import superuser
-from .models import db, User, Flight, Cart
+from .models import db, User, Flight, Cart, Order
 from datetime import datetime
 from sqlalchemy import cast, Date
 
@@ -156,27 +156,49 @@ def admin_flight_edit(id):
     return render_template("admin_flight_edit.html", flight=flight, form=form, datetime=datetime, str=str)
 
 
-@app.route("/add_to_cart/<int:id>", methods=["GET", "POST"])
-def add_to_cart(id):
-    if Cart.query.filter_by(flight_id=id).first():
-        f = Cart.query.filter_by(flight_id=id)
-        f.delete()
-        db.session.commit()
-        flash("Deleted from cart")
+@app.route("/delete_from_cart/<int:flight_id>", methods=["GET", "POST"])
+def delete_from_cart(flight_id):
+    _cart = Cart.query.filter_by(customer_id=current_user.id, bought=False).first()
+    if not _cart:
+        return 'Cart not found', 404
+
+    order = Order.query.filter_by(cart_id=_cart.id, flight_id=flight_id).first()
+    if not order:
+        return "Order not found", 404
+    if order.amount == 1:
+        db.session.delete(order)
     else:
-        cart_item = Cart(flight_id=id, customer_id=current_user.id)
-        db.session.add(cart_item)
+        order.amount -= 1
+    db.session.commit()
+    flash("Deleted from cart")
+
+    return redirect(url_for("cart"))
+
+@app.route("/add_to_cart/<int:flight_id>", methods=["GET", "POST"])
+def add_to_cart(flight_id):
+
+    _cart = Cart.query.filter_by(customer_id=current_user.id, bought=False).first()
+    if not _cart:
+        _cart = Cart(customer_id=current_user.id)
+        db.session.add(_cart)
         db.session.commit()
-        print('Added to cart')
-        flash("Added to cart", category="success")
+
+    order = Order.query.filter_by(flight_id=flight_id, cart_id=_cart.id).first()
+    if not order:
+        order = Order(flight_id=flight_id, cart_id=_cart.id)
+        db.session.add(order)
+    else:
+        order.amount += 1
+    db.session.commit()
+
+    flash("Added to cart", category="success")
 
     return redirect(url_for("flights_list"))
 
 
 @app.route("/cart", methods=["GET", "POST"])
 def cart():
-    flights = current_user.get_flights_from_cart()
-    return render_template("cart.html",  flights=flights)
+    return render_template("cart.html",  flights=current_user.get_flights_from_open_cart())
 
 
 # @app.route("/booking")
@@ -188,30 +210,28 @@ def cart():
 def flights_list():
     flights = Flight.query.all()
 
-
-
-    url = "https://leopieters-iata-and-icao-v1.p.rapidapi.com/airplaneDatabase"
-
-    querystring = {"key": "5e51f3de30msh3f1d6d376d37970p146405jsnf34fbc386cc9", "numberRegistration": "HB-JVE"}
-
-    headers = {
-        'x-rapidapi-host': "leopieters-iata-and-icao-v1.p.rapidapi.com",
-        'x-rapidapi-key': "f587148c75msh7bb156ed004573ap179ad0jsnfa417f22b13c"
-    }
-
-    response = requests.request("GET", url, headers=headers, params=querystring)
-
-    # print(response.text)
-
-    all_data = requests.get(
-        url, headers=headers, params=querystring).json()
-    print(all_data)
+    # url = "https://leopieters-iata-and-icao-v1.p.rapidapi.com/airplaneDatabase"
+    #
+    # querystring = {"key": "5e51f3de30msh3f1d6d376d37970p146405jsnf34fbc386cc9", "numberRegistration": "HB-JVE"}
+    #
+    # headers = {
+    #     'x-rapidapi-host': "leopieters-iata-and-icao-v1.p.rapidapi.com",
+    #     'x-rapidapi-key': "f587148c75msh7bb156ed004573ap179ad0jsnfa417f22b13c"
+    # }
+    #
+    # response = requests.request("GET", url, headers=headers, params=querystring)
+    #
+    # # print(response.text)
+    #
+    # all_data = requests.get(
+    #     url, headers=headers, params=querystring).json()
+    # print(all_data)
 
     return render_template("flights_list.html", flights=flights)
 
 @app.route("/create_flight_admin", methods=["GET", "POST"])
 def create_flight_admin():
-    # language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
+
     form = CreateFlight()
 
     if form.validate_on_submit():

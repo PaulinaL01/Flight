@@ -20,12 +20,18 @@ class User(db.Model, UserMixin):
     confirm_code = db.Column(db.String(65))
     cart_items = db.relationship("Cart")
 
-    def get_flights_from_cart(self):
+    def get_flights_from_open_cart(self):
         flights = []
+
         for item in self.cart_items:
-            fl = Flight.query.filter_by(id=item.flight_id).first()
-            if fl:
-                flights.append(fl)
+            if item.bought:
+                continue
+            orders = Order.query.filter_by(cart_id=item.id)
+            for order in orders:
+                fl = Flight.query.filter_by(id=order.flight_id).first()
+                if fl:
+                    item_dict = (fl,  order.amount)
+                    flights.append(item_dict)
         return flights
 
 
@@ -70,18 +76,30 @@ class Booking(db.Model):
     flight_id = db.Column(db.Integer, db.ForeignKey("flight.flight_id"))
     customer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
+
 class Pilot(db.Model):
     id = db.Column(db.String, primary_key=True)
 
+
 class Admin(db.Model):
     id = db.Column(db.String, primary_key=True)
+
 
 class Customer(db.Model):
     id = db.Column(db.String, primary_key=True)
     booking_id = db.Column(db.Integer, db.ForeignKey("booking.id"))
 
+
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    flight_id = db.Column(db.Integer, db.ForeignKey("flight.flight_id"))
     customer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    bought = db.Column(db.Boolean, default=False)
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    price = db.Column(db.Integer)
+    amount = db.Column(db.Integer, default=1)
+    flight_id = db.Column(db.Integer, db.ForeignKey("flight.flight_id"))
+    cart_id = db.Column(db.Integer, db.ForeignKey("cart.id"))
 

@@ -10,7 +10,7 @@
 
 <br>
 <br>
-{% for flight in flights %}
+{% for flight, amount in flights %}
 <div class="row">
   <div class="card">
     <div class="card-body">
@@ -20,6 +20,12 @@
       {{ flight.arrival_date }}
     </div>
   </div>
+    {{ amount }}
+    <a href="/delete_from_cart/{{flight.id}}">
+        <button type="button" class="btn btn-danger" flight_id="{{flight.id}}">
+            <ion-icon name="cart-outline"></ion-icon>
+        </button>
+    </a>
 </div>
 {% endfor %}
 
