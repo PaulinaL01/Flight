@@ -9,3 +9,5 @@ flask-mail
 email_validator
 toml
 faker
+selenium
+parameterized

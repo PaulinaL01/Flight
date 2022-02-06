@@ -9,18 +9,19 @@ from flask_mail import Message
 from .decorator import superuser
 from .models import db, User, Flight, Cart, Order
 from datetime import datetime
-from sqlalchemy import cast, Date
+from .data import DataContext
 
 from flask_dance.contrib.github import github
 
+data_context = DataContext(db)
 
-@app.route("/",methods=['GET', 'POST'])
+
+@app.route("/", methods=['GET', 'POST'])
 @login_required
 def home():
     form = SearchFlightForm()
-    flights = Flight.query.all()
-    form.departure_city.choices = [(flight.departure_city, flight.departure_city) for flight in flights]
-    form.arrival_city.choices = [(flight.arrival_city, flight.arrival_city) for flight in flights]
+    form.departure_city.choices = data_context.get_all_departure_cities()
+    form.arrival_city.choices = data_context.get_all_arrival_cities()
 
     if form.validate_on_submit():
         print(form.departure_city.data, form.arrival_city.data, form.date_from.data, form.date_to.data)
@@ -28,7 +29,7 @@ def home():
 
     for fieldName, errorMessages in form.errors.items():
         for err in errorMessages:
-            print(fieldName, err)
+            flash(err, category="warning")
 
     return render_template("home.html", form=form)
 
@@ -37,31 +38,21 @@ def home():
 def sign_up():
     form = SignUpForm()
     if form.validate_on_submit():
-        if User.query.filter_by(login=form.login.data).first():
-            flash("Podany uzytkownik juz istnieje", category="warning")
-        elif User.query.filter_by(email=form.email.data).first():
-            flash("Użytkownik o podanym adresie email już istnieje!", category="warning")
-        else:
-            flash("Utworzono uzytkownika", category="success")
-            user = User(login=form.login.data, email=form.email.data,
-                        password=generate_password_hash(form.password1.data),
-                        confirm_code=create_code(64))
-            db.session.add(user)
-            db.session.commit()
+        user, message_text = data_context.create_user(form.login.data, form.email.data, form.password1.data)
+        if user:
             msg = Message("Email confirmation", sender=("Flask Project", "flaskproject2@gmail.com"),
                           recipients=[user.email])
             with open("website/templates/email_confirmation.html", "r", encoding="utf-8") as f:
                 msg.html = render_template_string(f.read(), code=user.confirm_code)
                 mail.send(msg)
-            flash("Account created! Confirm email adress", category="success")
+            flash(message_text, category="success")
             return redirect(url_for("login"))
+        else:
+            flash(message_text, category="warning")
     else:
-        for error in form.login.errors:
-            flash(error, category="warning")
-        for error in form.email.errors:
-            flash(error, category="warning")
-        for error in form.password1.errors:
-            flash(error, category="warning")
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                flash(err, category="warning")
 
     return render_template("sign_up.html", current_user=current_user, form=form)
 
@@ -70,7 +61,7 @@ def sign_up():
 def login():
     form = LoginForm()
     if form.validate_on_submit(): #jesli formularz udalo sie poprawnie wypelnic
-        user = User.query.filter_by(login=form.login.data).first()
+        user = data_context.get_user_by_login(form.login.data)
         if not user:
             flash("Nie ma takiego uzytkownika", category="danger")
         elif not user.confirmed_email:
@@ -80,10 +71,9 @@ def login():
             flash("Zalogowano!", category="success")
             return redirect(url_for("home"))
     else:
-        for error in form.login.errors:
-            flash(error, category="warning")
-        for error in form.password.errors:
-            flash(error, category="warning")
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                flash(err, category="warning")
 
     return render_template("login.html", current_user=current_user, form=form)
 
@@ -96,9 +86,10 @@ def logout():
     flash("Wylogowano!", category="success")
     return redirect(url_for("login"))
 
+
 @app.route("/register/<code>")
 def confirm_email(code):
-    user = User.query.filter_by(confirm_code=code).first()
+    user = data_context.get_user_by_confirmation_code(code)
     if not user:
         return "Bad request", 400
     user.confirmed_email = True
@@ -113,25 +104,19 @@ def cookies():
     session["cookies"] = True #zapisuje w sesji przegladarki pare "cookies" i True
     return redirect(url_for("home"))
 
+
 @app.route("/github_login")
 def github_login():
     if not github.authorized:
         return redirect(url_for("github.login"))
     else:
         resp = github.get("/user")
-        print(resp)
-        print(resp.json())
-        name = resp.json()["login"]
+        login = resp.json()["login"]
         email = resp.json()["email"]
-        user = User.query.filter_by(login=name).first()
+        user = data_context.get_user_by_login(login)
         if not user:
-            user = User(login=name, email=email,
-                        password=generate_password_hash("1234567"),
-                        is_github_account=True,
-                        confirmed_email=True)
-            db.session.add(user)
-            db.session.commit()
-            user = User.query.filter_by(login=name).first()
+            user, message_text = data_context.create_user(login, email, "1234567", is_github_account=True, confirmed_email=True)
+            #TODO: obsluzyc sytuacje gdy ktos na githubie ma taki sam mail jak inna osoba w bazie
         login_user(user)
 
         if not user.is_github_account:
@@ -144,14 +129,12 @@ def github_login():
 @app.route("/admin_flight_edit/<int:id>", methods=["GET", "POST"])
 def admin_flight_edit(id):
     form= CreateFlight()
-    flight = Flight.query.filter_by(id=id).first()
-    # dateFrom = datetime.strptime(flight.departure_date, "%Y-%m-%dT%H:%M")
-    # dateTo = datetime.strptime(flight.arrival_date, "%Y-%m-%dT%H:%M")
+    flight = data_context.get_flight_by_id(id)
     if form.validate_on_submit() and flight:
-        flight.arrival_city = form.create_arrival_city.data
-        flight.departure_city = form.create_departure_city.data
-        flight.flight_number = form.create_flight_number.data
-        db.session.commit()
+        data_context.update_flight(flight_id=id,
+                                   arrival_city=form.create_arrival_city.data,
+                                   departure_city=form.create_departure_city.data,
+                                   flight_number=form.create_flight_number.data)
 
     return render_template("admin_flight_edit.html", flight=flight, form=form, datetime=datetime, str=str)
 
@@ -299,9 +282,8 @@ def admin_flights_list():
 #@login_required
 def search(departure="", arrival="", date_from=None, date_to=None):
     form = SearchFlightForm()
-    flights = Flight.query.all()
-    form.departure_city.choices = [(flight.departure_city, flight.departure_city) for flight in flights]
-    form.arrival_city.choices = [(flight.arrival_city, flight.arrival_city) for flight in flights]
+    form.departure_city.choices = data_context.get_all_departure_cities()
+    form.arrival_city.choices = data_context.get_all_arrival_cities()
 
     flights = []
 
@@ -315,7 +297,6 @@ def search(departure="", arrival="", date_from=None, date_to=None):
             flights = Flight.query.filter_by(arrival_city=arrival, departure_city=departure)
 
             flights = [flight for flight in flights if flight.departure_date.date() == dateFrom.date()]
-
 
     for fieldName, errorMessages in form.errors.items():
         for err in errorMessages:
