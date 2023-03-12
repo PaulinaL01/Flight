@@ -1,12 +1,8 @@
-import requests
 from flask import Flask, render_template, request, url_for, redirect, flash, session, send_from_directory,render_template_string
 from flask_login import login_required, login_user, logout_user, current_user
 from . import app, db, User,mail
-from werkzeug.security import generate_password_hash
 from .forms import LoginForm, SignUpForm, SearchFlightForm, CreateFlight
-from .utils import create_code
 from flask_mail import Message
-from .decorator import superuser
 from .models import db, User, Flight, Cart, Order
 from datetime import datetime
 from .data import DataContext
@@ -60,7 +56,7 @@ def sign_up():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-    if form.validate_on_submit(): #jesli formularz udalo sie poprawnie wypelnic
+    if form.validate_on_submit():
         user = data_context.get_user_by_login(form.login.data)
         if not user:
             flash("Nie ma takiego uzytkownika", category="danger")
@@ -101,7 +97,7 @@ def confirm_email(code):
 
 @app.route("/acceptcookies")
 def cookies():
-    session["cookies"] = True #zapisuje w sesji przegladarki pare "cookies" i True
+    session["cookies"] = True
     return redirect(url_for("home"))
 
 
@@ -157,6 +153,7 @@ def delete_from_cart(flight_id):
 
     return redirect(url_for("cart"))
 
+
 @app.route("/add_to_cart/<int:flight_id>", methods=["GET", "POST"])
 def add_to_cart(flight_id):
 
@@ -184,33 +181,12 @@ def cart():
     return render_template("cart.html",  flights=current_user.get_flights_from_open_cart())
 
 
-# @app.route("/booking")
-# def booking():
-#     pass
-
-
 @app.route("/flights_list")
 def flights_list():
     flights = Flight.query.all()
 
-    # url = "https://leopieters-iata-and-icao-v1.p.rapidapi.com/airplaneDatabase"
-    #
-    # querystring = {"key": "5e51f3de30msh3f1d6d376d37970p146405jsnf34fbc386cc9", "numberRegistration": "HB-JVE"}
-    #
-    # headers = {
-    #     'x-rapidapi-host': "leopieters-iata-and-icao-v1.p.rapidapi.com",
-    #     'x-rapidapi-key': "f587148c75msh7bb156ed004573ap179ad0jsnfa417f22b13c"
-    # }
-    #
-    # response = requests.request("GET", url, headers=headers, params=querystring)
-    #
-    # # print(response.text)
-    #
-    # all_data = requests.get(
-    #     url, headers=headers, params=querystring).json()
-    # print(all_data)
-
     return render_template("flights_list.html", flights=flights)
+
 
 @app.route("/create_flight_admin", methods=["GET", "POST"])
 def create_flight_admin():
@@ -223,8 +199,6 @@ def create_flight_admin():
         dateFrom = datetime.strptime(form.create_date_from.data, "%Y-%m-%dT%H:%M")
         dateTo = datetime.strptime(form.create_date_to.data, "%Y-%m-%dT%H:%M")
 
-        # dateFrom = datetime(dateFrom)
-        # dateTo = datetime(dateTo)
         flight = Flight(departure_city=form.create_departure_city.data, arrival_city=form.create_arrival_city.data,
                         departure_date=dateFrom, arrival_date=dateTo,
                         flight_number=form.create_flight_number.data,
@@ -236,7 +210,7 @@ def create_flight_admin():
         db.session.commit()
         flash("Dodano")
 
-        # tutaj trzeba wykonac redirect do innego endpointu z wynikami wyszukiwania
+        #TODO: tutaj trzeba wykonac redirect do innego endpointu z wynikami wyszukiwania
 
     for fieldName, errorMessages in form.errors.items():
         for err in errorMessages:
@@ -247,7 +221,6 @@ def create_flight_admin():
 
 @app.route("/admin_search", methods=["GET", "POST"])
 def admin_search():
-    #language = SelectField(u'Programming Language', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])
     form = SearchFlightForm()
     flights = Flight.query.all()
     form.departure_city.choices = [(flight.departure_city, flight.departure_city) for flight in flights]
@@ -262,7 +235,7 @@ def admin_search():
                                       and Flight.departure_date >= dateFrom
                                       and Flight.arrival_date <= dateTo)
         flights = list(flights)
-        #tutaj trzeba wykonac redirect do innego endpointu z wynikami wyszukiwania
+        #TODO: tutaj trzeba wykonac redirect do innego endpointu z wynikami wyszukiwania
 
     for fieldName, errorMessages in form.errors.items():
         for err in errorMessages:
@@ -271,7 +244,6 @@ def admin_search():
     return render_template("admin_search.html", form=form)
 
 @app.route("/admin_flights_list")
-#@login_required
 def admin_flights_list():
     flights = Flight.query.all()
     return render_template("admin_flights_list.html", flights=flights)
@@ -279,7 +251,6 @@ def admin_flights_list():
 
 @app.route("/search", methods=["GET", "POST"])
 @app.route("/search/<departure>/<arrival>/<date_from>/<date_to>")
-#@login_required
 def search(departure="", arrival="", date_from=None, date_to=None):
     form = SearchFlightForm()
     form.departure_city.choices = data_context.get_all_departure_cities()

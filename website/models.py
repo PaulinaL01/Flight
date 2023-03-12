@@ -50,11 +50,13 @@ class Flight(db.Model):
     flight_id = db.Column(db.Integer)
     pilot_id = db.Column(db.Integer)
 
+
 class Airport(db.Model):
     id = db.Column(db.String, primary_key=True)
     IATACode = db.Column(db.Integer)
     max_plane_number = db.Column(db.Integer)
     country = db.Column(db.String(100))
+
 
 class Plane(db.Model):
     id = db.Column(db.String, primary_key=True)
@@ -65,14 +67,16 @@ class Plane(db.Model):
     tech_chceck_date = db.Column(db.DateTime(timezone=True),default=func.now())
     expire_date = db.Column(db.DateTime(timezone=True),default=func.now())
 
+
 class Luggage(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     flight_id = db.Column(db.Integer)
     weight = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
+
 class Booking(db.Model):
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     flight_id = db.Column(db.Integer, db.ForeignKey("flight.flight_id"))
     customer_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 

@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_mail import Mail
 import toml
+from werkzeug.security import generate_password_hash
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
@@ -13,6 +14,7 @@ app.config.from_file("config.toml", load=toml.load)
 app.config['SECRET_KEY'] = '1234'
 DB_NAME = "database.db"
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_NAME}"
+#app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://user:password@db/baza"
 db = SQLAlchemy()
 db.init_app(app)
 SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -27,24 +27,6 @@ class UserTestCases(unittest.TestCase):
         signup_element = self.driver.find_element_by_css_selector("a[href='/signup']")
         signup_element.click()
 
-        # login_field = self.driver.find_element_by_id("login")
-        # login_field.send_keys(login_value)
-        #
-        # email_field = self.driver.find_element_by_id("email")
-        # email_field.send_keys(email_value)
-        #
-        # password1_field = self.driver.find_element_by_id("password1")
-        # password1_field.send_keys(password1_value)
-        #
-        # password2_field = self.driver.find_element_by_id("password2")
-        # password2_field.send_keys(password2_value)
-        #
-        # button_submit = self.driver.find_element_by_css_selector("button[type='submit']")
-        # button_submit.click()
-        #
-        # alert = self.driver.find_element_by_name("alert")
-        # self.assertEqual(expected_message, alert.text)
-
         alert_message = SignUpPage(self.driver)\
                         .set_login(login_value)\
                         .set_email(email_value)\
